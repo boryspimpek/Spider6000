@@ -9,6 +9,12 @@ sts_id = [1, 2, 3, 4, 5, 6, 7, 8]
 acc = 250
 speed = 2400
 
+h = 20                  # height
+x_amp = 30                  # x amplitude
+z_amp = 15                  # z amplitude
+offset_front = 5        # front leg offset
+offset_back = 45        # back legs offset
+
 angle_limits = {
     1: (75, 150), 2: (30, 140), 3: (30, 105), 4: (40, 150),
     5: (30, 105), 6: (40, 150), 7: (85, 150), 8: (30, 140)
@@ -50,40 +56,39 @@ class GaitMode(Enum):
 
 @dataclass
 class GaitParams:
-    """Parametry chodu dla każdej nogi (LF, RF, LR, RR)"""
-    x_amps: tuple    # amplitudy ruchu w osi X
-    z_amps: tuple    # amplitudy podnoszenia w osi Z
-    x_offsets: tuple # offset pozycji spoczynkowej X
+    x_amps: tuple    
+    z_amps: tuple    
+    x_offsets: tuple 
     z_offsets: tuple
-    phase_offsets: tuple # przesunięcia fazowe
+    phase_offsets: tuple 
 
 GAIT_CONFIGS = {
     GaitMode.CREEP_FORWARD: GaitParams(
-        x_amps=(30, -30, 30, -30),      # LF, RF, LR, RR
-        z_amps=(15, -15, -15, 15),
-        x_offsets=(85, 95, 45, 135),
-        z_offsets=(90, 90, 90, 90),
+        x_amps=(x_amp, -x_amp, x_amp, -x_amp),      # LF, RF, LR, RR
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(90 - offset_front, 90 + offset_front, 90 - offset_back, 90 + offset_back),
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.00, 0.50, 0.25, 0.75)
     ),
     GaitMode.CREEP_BACKWARD: GaitParams(
-        x_amps=(-30, 30, -30, 30),
-        z_amps=(15, -15, -15, 30),
-        x_offsets=(135, 45, 95, 85),
-        z_offsets=(90, 90, 90, 90),
+        x_amps=(-x_amp, x_amp, -x_amp, x_amp),
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(90 + offset_back, 90 - offset_back, 90 + offset_front, 90 - offset_front),
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.25, 0.75, 0.00, 0.50)
     ),
     GaitMode.CREEP_RIGHT: GaitParams(
-        x_amps=(30, 30, 30, 30),
-        z_amps=(15, -15, -15, 15),
-        x_offsets=(120, 30, 30, 120),        
-        z_offsets=(90, 90, 90, 90),
+        x_amps=(x_amp, x_amp, x_amp, x_amp),
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(135-x_amp/2, 45-x_amp/2, 45-x_amp/2, 135-x_amp/2),        
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.00, 0.50, 0.25, 0.75)
     ),
     GaitMode.CREEP_LEFT: GaitParams(
-        x_amps=(-30, -30, -30, -30),
-        z_amps=(15, -15, -15, 15),
-        x_offsets=(150, 60, 60, 150),        
-        z_offsets=(90, 90, 90, 90),
+        x_amps=(-x_amp, -x_amp, -x_amp, -x_amp),
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(135+x_amp/2, 45+x_amp/2, 45+x_amp/2, 135+x_amp/2),        
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.00, 0.50, 0.25, 0.75)
     ),
     GaitMode.CREEP_TROT_FORWARD: GaitParams(
@@ -183,7 +188,7 @@ def calculate_gait_angles(mode, phase):
     return angles
 
 def print_gait_info(step, t, angles, mode):
-    if step % 10 == 0:  # Wyświetlaj co 10 kroków żeby nie zaśmiecać
+    if step % 5 == 0:  # Wyświetlaj co 10 kroków żeby nie zaśmiecać
         print(f"Krok {step} | Czas: {t:.1f}s | Tryb: {mode.name} | ", end="")
         
         # Wyświetl wszystkie kąty w jednej linii
@@ -196,7 +201,7 @@ def print_gait_info(step, t, angles, mode):
         print(" | ".join(leg_angles))
         
 def execute_gait(mode):
-    t_cycle = 2.0  # czas pełnego cyklu chodu [s]
+    t_cycle = 8.0  # czas pełnego cyklu chodu [s]
     dt = 0.05       # krok czasowy [s]
     step = 0
     
@@ -223,10 +228,11 @@ def execute_gait(mode):
         print("Gait execution completed")
 
 if __name__ == "__main__":
-    # execute_gait(GaitMode.CREEP_FORWARD)
+    execute_gait(GaitMode.CREEP_FORWARD)
+    # execute_gait(GaitMode.CREEP_BACKWARD)
     # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_RIGHT)
     # execute_gait(GaitMode.CREEP_TROT_FORWARD)
     # execute_gait(GaitMode.CREEP_TROT_BACKWARD)
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
-    execute_gait(GaitMode.CREEP_TROT_LEFT)  
+    # execute_gait(GaitMode.CREEP_TROT_LEFT)  
