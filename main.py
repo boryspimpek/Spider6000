@@ -20,9 +20,9 @@ angle_limits = {
 
 trims = {
     1: 100,
-    2: 40,
+    2: 60,
     3: 140,
-    4: 75,
+    4: 55,
     5: 0,
     6: 10,
     7: 0,
@@ -50,35 +50,45 @@ def move_servo(id, angle_deg):
     trimmed_pos = pos + trims.get(id, 0)
     servo.WritePosition(id, trimmed_pos)
 
+def neutral():
+    move_servo(1, 90)
+    move_servo(2, 90)
+    move_servo(3, 90)
+    move_servo(4, 90)
+    move_servo(5, 90)
+    move_servo(6, 90)
+    move_servo(7, 90)
+    move_servo(8, 90)
+
 def creep_gait(x_amp, z_amp, x_off, z_off, phase):
     # LIFT (0-25% cyklu)
     if phase < 0.25:
-        z = z_amp * math.sin(phase / 0.25 * math.pi)
+        z = z_off + z_amp * math.sin(phase / 0.25 * math.pi)
         x = x_off + x_amp * math.sin(phase / 0.25 * math.pi / 2)
     # RETURN (25-100% cyklu) 
     else:
-        z = 0
+        z = z_off
         x = x_off + x_amp * math.cos((phase - 0.25) / 0.75 * math.pi / 2)
     
     return z, x
 
 if __name__ == "__main__":
-    t_cycle = 4.0  
-    dt = 0.1       
+    t_cycle = 8.0  
+    dt = 0.05    
     
     print("Krok | Czas  | LF-z    | LF-x    | RR-z   | RR-x    | RF-z   | RF-x    | LR-z   | LR-x")
     print("-" * 95)
     
     step = 0
-    while True:
+    while step < 160:
         t = step * dt
         phase = (t / t_cycle) % 1.0  # normalizacja do 0.0-1.0
         
         # Fazy dla każdej nogi
-        lf_z, lf_x = creep_gait(30, 30, 85, 0, phase=(phase + 0.00) % 1.0)
-        rr_z, rr_x = creep_gait(-30, 30, 135, 0, phase=(phase + 0.75) % 1.0)
-        rf_z, rf_x = creep_gait(-30, 30, 95, 0, phase=(phase + 0.50) % 1.0)
-        lr_z, lr_x = creep_gait(30, 30, 45, 0, phase=(phase + 0.25) % 1.0)
+        lf_z, lf_x = creep_gait(30, 15, 85, 90, phase=(phase + 0.00) % 1.0)
+        rr_z, rr_x = creep_gait(-30, 15, 135, 90, phase=(phase + 0.75) % 1.0)
+        rf_z, rf_x = creep_gait(-30, -15, 95, 90, phase=(phase + 0.50) % 1.0)
+        lr_z, lr_x = creep_gait(30, -15, 45, 90, phase=(phase + 0.25) % 1.0)
         
         print(f"{step:4d} | {t:4.1f}s | {lf_z:6.2f}° | {lf_x:6.2f}° | "
               f"{rr_z:6.2f}° | {rr_x:6.2f}° | {rf_z:6.2f}° | {rf_x:6.2f}° | "
