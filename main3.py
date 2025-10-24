@@ -154,6 +154,16 @@ def creep_gait(x_amp, z_amp, x_off, z_off, phase):
         x = x_off + x_amp * (1 - normalized_return_phase)  # liniowy powrót
     return z, x
 
+def trot_gait(x_amp, z_amp, x_off, z_off, phase):
+    if phase < 0.5:
+        z = z_off + z_amp * math.sin(phase * 2 * math.pi)
+        x = x_off + x_amp * math.sin(phase * math.pi)
+    else:
+        z = z_off
+        x = x_off + x_amp * math.cos((phase - 0.5) * math.pi)
+    
+    return z, x
+
 def calculate_gait_angles(mode, phase):
     params = GAIT_CONFIGS[mode]
     
