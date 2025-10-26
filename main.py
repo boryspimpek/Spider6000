@@ -9,20 +9,20 @@ sts_id = [1, 2, 3, 4, 5, 6, 7, 8]
 acc = 250
 speed = 2400
 
-h = 20                  # height
+h = 20                      # height
 x_amp = 30                  # x amplitude
 z_amp = 15                  # z amplitude
-offset_front = 5        # front leg offset
-offset_back = 45        # back legs offset
+offset_front = 0            # front leg offset
+offset_back = 45            # back legs offset
 
 angle_limits = {
-    1: (75, 150), 2: (30, 140), 3: (30, 105), 4: (40, 150),
-    5: (30, 105), 6: (40, 150), 7: (85, 150), 8: (30, 140)
+    1: (0, 90), 2: (30, 140), 3: (90, 180), 4: (40, 150),
+    5: (90, 180), 6: (40, 150), 7: (0, 90), 8: (30, 140)
 }
 
 trims = {
-    1: 100, 2: 60, 3: 140, 4: 55,
-    5: 0, 6: 10, 7: 0, 8: 40}
+    1: 0, 2: 0, 3: 0, 4: 0,
+    5: 0, 6: 0, 7: 0, 8: 0}
 
 SERVO_MAPPING = [
     (1, 'lf', 'x'), (2, 'lf', 'z'),  # Serwo 1: LF X, Serwo 2: LF Z
@@ -32,8 +32,13 @@ SERVO_MAPPING = [
 ]
 
 NEUTRAL_ANGLES = {
-    1: 100, 2: 90, 3: 80, 4: 90,
-    5: 60, 6: 90, 7: 120, 8: 90
+    1: 90, 2: 90, 3: 90, 4: 90,
+    5: 90, 6: 90, 7: 90, 8: 90
+}
+
+CENTER_POSITIONS = {
+    1: 45, 2: 90, 3: 135, 4: 90,
+    5: 135, 6: 90, 7: 45, 8: 90
 }
 
 for id in sts_id:
@@ -64,9 +69,9 @@ class GaitParams:
 
 GAIT_CONFIGS = {
     GaitMode.CREEP_FORWARD: GaitParams(
-        x_amps=(x_amp, -x_amp, x_amp, -x_amp),      # LF, RF, LR, RR
+        x_amps=(-x_amp, x_amp, -x_amp, +x_amp),      # LF, RF, LR, RR
         z_amps=(z_amp, -z_amp, -z_amp, z_amp),
-        x_offsets=(90 - offset_front, 90 + offset_front, 90 - offset_back, 90 + offset_back),
+        x_offsets=(90 + offset_front, 90 - offset_front, 90 + offset_back, 90 - offset_back),
         z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.00, 0.50, 0.25, 0.75)
     ),
@@ -96,12 +101,12 @@ GAIT_CONFIGS = {
         z_amps=(z_amp, -z_amp, -z_amp, z_amp),
         x_offsets=(135-x_amp/2, 45+x_amp/2, 45-x_amp/2, 135+x_amp/2),
         z_offsets=(90-h, 90+h, 90+h, 90-h),
-        phase_offsets=(0.50, 0.00, 0.00, 0.50)  # LF i LR w fazie, RF i RR w fazie
+        phase_offsets=(0.50, 0.00, 0.00, 0.50) 
     ),
     GaitMode.CREEP_TROT_BACKWARD: GaitParams(
         x_amps=(-x_amp, x_amp, -x_amp, x_amp),
         z_amps=(z_amp, -z_amp, -z_amp, z_amp),
-        x_offsets=(135+x_amp/2, 45-x_amp/2, 45-x_amp/2, 135-x_amp/2),
+        x_offsets=(135+x_amp/2, 45-x_amp/2, 45+x_amp/2, 135-x_amp/2),
         z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.50, 0.00, 0.00, 0.50)  # LF i LR w fazie, RF i RR w fazie
     ),
@@ -141,7 +146,7 @@ def move_servo(id, angle_deg):
         print(f"Error moving servo {id}: {e}")
 
 def return_to_neutral():
-    for servo_id, angle in NEUTRAL_ANGLES.items():
+    for servo_id, angle in CENTER_POSITIONS.items():
         move_servo(servo_id, angle)
     
     time.sleep(1)
@@ -188,10 +193,9 @@ def calculate_gait_angles(mode, phase):
     return angles
 
 def print_gait_info(step, t, angles, mode):
-    if step % 5 == 0:  # Wyświetlaj co 10 kroków żeby nie zaśmiecać
+    if step % 5 == 0:  
         print(f"Krok {step} | Czas: {t:.1f}s | Tryb: {mode.name} | ", end="")
         
-        # Wyświetl wszystkie kąty w jednej linii
         leg_angles = []
         for leg in ['lf', 'rf', 'lr', 'rr']:
             x_angle = angles[leg]['x']
@@ -201,7 +205,7 @@ def print_gait_info(step, t, angles, mode):
         print(" | ".join(leg_angles))
         
 def execute_gait(mode):
-    t_cycle = 4.0  # czas pełnego cyklu chodu [s]
+    t_cycle = 8  # czas pełnego cyklu chodu [s]
     dt = 0.05       # krok czasowy [s]
     step = 0
     
@@ -228,11 +232,12 @@ def execute_gait(mode):
         print("Gait execution completed")
 
 if __name__ == "__main__":
-    # execute_gait(GaitMode.CREEP_FORWARD)
+    execute_gait(GaitMode.CREEP_FORWARD)
     # execute_gait(GaitMode.CREEP_BACKWARD)
     # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_RIGHT)
     # execute_gait(GaitMode.CREEP_TROT_FORWARD)
     # execute_gait(GaitMode.CREEP_TROT_BACKWARD)
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
-    execute_gait(GaitMode.CREEP_TROT_LEFT)  
+    # execute_gait(GaitMode.CREEP_TROT_LEFT)  
+    # move_servo(1, 100)

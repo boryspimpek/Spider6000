@@ -8,7 +8,7 @@ servo = ST3215('COM3')
 ###################################################### SETTING SECTION #################
 
 ######################## List servos
-# print(servos := servo.ListServos())
+print(servos := servo.ListServos())
 
 ######################## Ping servo
 # print(alive := servo.PingServo(1))
@@ -19,19 +19,18 @@ servo = ST3215('COM3')
 # print(servos := servo.ListServos())
 
 ####################### Define middle point
-# id = 4
+# id = 8
 # servo.DefineMiddle(id)
 # time.sleep(5)
 # print(position := servo.ReadPosition(id))
 
-# print(position := servo.ReadPosition(4))
 
 
-servo.MoveTo(1, 1024, 200, 10, True)
-servo.MoveTo(2, 1024, 200, 10, True)
-servo.MoveTo(3, 1024, 200, 10, True)
-servo.MoveTo(4, 1024, 200, 10, True)
-servo.MoveTo(5, 1024, 200, 10, True)
-servo.MoveTo(6, 1024, 200, 10, True)
-servo.MoveTo(7, 1024, 200, 10, True)
-servo.MoveTo(8, 1024, 200, 10, True)
+# servo.MoveTo(1, 1024, 200, 10, True)
+# servo.MoveTo(2, 1024, 200, 10, True)
+# servo.MoveTo(3, 1024, 200, 10, True)
+# servo.MoveTo(4, 1024, 200, 10, True)
+# servo.MoveTo(5, 1024, 200, 10, True)
+# servo.MoveTo(6, 1024, 200, 10, True)
+# servo.MoveTo(7, 1024, 200, 10, True)
+# servo.MoveTo(8, 1024, 200, 10, True)
