@@ -239,5 +239,5 @@ if __name__ == "__main__":
     # execute_gait(GaitMode.CREEP_TROT_FORWARD)
     # execute_gait(GaitMode.CREEP_TROT_BACKWARD)
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
-    execute_gait(GaitMode.CREEP_TROT_LEFT)  
-    # move_servo(1, 100)
+    # execute_gait(GaitMode.CREEP_TROT_LEFT)  
+    move_servo(4, 90)
