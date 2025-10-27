@@ -21,8 +21,8 @@ angle_limits = {
 }
 
 trims = {
-    1: 0, 2: 0, 3: 0, 4: 0,
-    5: 0, 6: 0, 7: 0, 8: 0}
+    1: -25, 2: 15, 3: 30, 4: 0,
+    5: -15, 6: 0, 7: -10, 8: 45}
 
 SERVO_MAPPING = [
     (1, 'lf', 'x'), (2, 'lf', 'z'),  # Serwo 1: LF X, Serwo 2: LF Z
@@ -205,8 +205,8 @@ def print_gait_info(step, t, angles, mode):
         print(" | ".join(leg_angles))
         
 def execute_gait(mode):
-    t_cycle = 4  # czas pełnego cyklu chodu [s]
-    dt = 0.05       # krok czasowy [s]
+    t_cycle = 4                 # czas pełnego cyklu chodu [s]
+    dt = 0.05                   # krok czasowy [s]
     step = 0
     
     try:
@@ -232,7 +232,7 @@ def execute_gait(mode):
         print("Gait execution completed")
 
 if __name__ == "__main__":
-    # execute_gait(GaitMode.CREEP_FORWARD)
+    execute_gait(GaitMode.CREEP_FORWARD)
     # execute_gait(GaitMode.CREEP_BACKWARD)
     # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_RIGHT)
@@ -240,4 +240,6 @@ if __name__ == "__main__":
     # execute_gait(GaitMode.CREEP_TROT_BACKWARD)
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
     # execute_gait(GaitMode.CREEP_TROT_LEFT)  
-    move_servo(4, 90)
+
+    # for servo_id, angle in NEUTRAL_ANGLES.items():
+    #     move_servo(servo_id, angle)
