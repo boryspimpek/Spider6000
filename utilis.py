@@ -8,7 +8,7 @@ servo = ST3215('COM3')
 ###################################################### SETTING SECTION #################
 
 ######################## List servos
-print(servos := servo.ListServos())
+# print(servos := servo.ListServos())
 
 ######################## Ping servo
 # print(alive := servo.PingServo(1))
