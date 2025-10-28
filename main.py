@@ -13,7 +13,7 @@ h = 20                      # height
 x_amp = 30                  # x amplitude
 z_amp = 15                  # z amplitude
 offset_front = 0            # front leg offset
-offset_back = 45            # back legs offset
+offset_back = 75            # back legs offset
 
 angle_limits = {
     1: (0, 90), 2: (30, 140), 3: (90, 180), 4: (40, 150),
@@ -21,8 +21,8 @@ angle_limits = {
 }
 
 trims = {
-    1: -25, 2: 15, 3: 30, 4: 0,
-    5: -15, 6: 0, 7: -10, 8: 45}
+    1: -25, 2: 10, 3: 30, 4: 0,
+    5: -15, 6: 0, 7: -10, 8: 60}
 
 SERVO_MAPPING = [
     (1, 'lf', 'x'), (2, 'lf', 'z'),  # Serwo 1: LF X, Serwo 2: LF Z
@@ -32,8 +32,8 @@ SERVO_MAPPING = [
 ]
 
 NEUTRAL_ANGLES = {
-    1: 90, 2: 90, 3: 90, 4: 90,
-    5: 90, 6: 90, 7: 90, 8: 90
+    1: 45, 2: 70, 3: 135, 4: 110,
+    5: 135, 6: 110, 7: 45, 8: 70
 }
 
 CENTER_POSITIONS = {
@@ -205,7 +205,7 @@ def print_gait_info(step, t, angles, mode):
         print(" | ".join(leg_angles))
         
 def execute_gait(mode):
-    t_cycle = 4                 # czas pełnego cyklu chodu [s]
+    t_cycle = 2               # czas pełnego cyklu chodu [s]
     dt = 0.05                   # krok czasowy [s]
     step = 0
     
@@ -232,7 +232,7 @@ def execute_gait(mode):
         print("Gait execution completed")
 
 if __name__ == "__main__":
-    execute_gait(GaitMode.CREEP_FORWARD)
+    # execute_gait(GaitMode.CREEP_FORWARD)
     # execute_gait(GaitMode.CREEP_BACKWARD)
     # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_RIGHT)
@@ -241,5 +241,5 @@ if __name__ == "__main__":
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
     # execute_gait(GaitMode.CREEP_TROT_LEFT)  
 
-    # for servo_id, angle in NEUTRAL_ANGLES.items():
-    #     move_servo(servo_id, angle)
+    for servo_id, angle in NEUTRAL_ANGLES.items():
+        move_servo(servo_id, angle)
