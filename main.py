@@ -13,7 +13,7 @@ h = 20                      # height
 x_amp = 30                  # x amplitude
 z_amp = 15                  # z amplitude
 offset_front = 0            # front leg offset
-offset_back = 75            # back legs offset
+offset_back = 45            # back legs offset
 
 angle_limits = {
     1: (0, 90), 2: (30, 140), 3: (90, 180), 4: (40, 150),
@@ -32,13 +32,28 @@ SERVO_MAPPING = [
 ]
 
 NEUTRAL_ANGLES = {
-    1: 45, 2: 70, 3: 135, 4: 110,
-    5: 135, 6: 110, 7: 45, 8: 70
+    1: 45, 2: 90 - h, 3: 135, 4: 90 + h,
+    5: 135, 6: 90 + h, 7: 45, 8: 90 - h
 }
 
-CENTER_POSITIONS = {
-    1: 45, 2: 90, 3: 135, 4: 90,
-    5: 135, 6: 90, 7: 45, 8: 90
+FORWARD_POS = {
+    1: 90, 2: 90-h, 3: 110, 4: 90+h,
+    5: 105, 6: 90+h, 7: 55, 8: 90-h
+}
+
+BACKWARD_POS = {
+    1: 75, 2: 90-h, 3: 125, 4: 90+h,
+    5: 90, 6: 90+h, 7: 70, 8: 90-h
+}
+
+LEFT_POS = {
+    1: 30, 2: 90-h, 3: 140, 4: 90+h,
+    5: 150, 6: 90+h, 7: 40, 8: 90-h
+}
+
+RIGHT_POS = {
+    1: 60, 2: 90-h, 3: 130, 4: 90+h,
+    5: 120, 6: 90+h, 7: 50, 8: 90-h
 }
 
 for id in sts_id:
@@ -97,16 +112,16 @@ GAIT_CONFIGS = {
         phase_offsets=(0.00, 0.50, 0.25, 0.75)
     ),
     GaitMode.CREEP_TROT_FORWARD: GaitParams(
-        x_amps=(x_amp, -x_amp, x_amp, -x_amp),
+        x_amps=(-x_amp, x_amp, -x_amp, x_amp),
         z_amps=(z_amp, -z_amp, -z_amp, z_amp),
-        x_offsets=(45-x_amp/2, 135+x_amp/2, 135-x_amp/2, 45+x_amp/2),
+        x_offsets=(45+x_amp/2, 135-x_amp/2, 135+x_amp/2, 45-x_amp/2),
         z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.50, 0.00, 0.00, 0.50) 
     ),
     GaitMode.CREEP_TROT_BACKWARD: GaitParams(
-        x_amps=(-x_amp, x_amp, -x_amp, x_amp),
+        x_amps=(x_amp, -x_amp, x_amp, -x_amp),
         z_amps=(z_amp, -z_amp, -z_amp, z_amp),
-        x_offsets=(45+x_amp/2, 135-x_amp/2, 135+x_amp/2, 45-x_amp/2),
+        x_offsets=(45-x_amp/2, 135+x_amp/2, 135-x_amp/2, 45+x_amp/2),
         z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.50, 0.00, 0.00, 0.50)  # LF i LR w fazie, RF i RR w fazie
     ),
@@ -146,7 +161,7 @@ def move_servo(id, angle_deg):
         print(f"Error moving servo {id}: {e}")
 
 def return_to_neutral():
-    for servo_id, angle in CENTER_POSITIONS.items():
+    for servo_id, angle in NEUTRAL_ANGLES.items():
         move_servo(servo_id, angle)
     
     time.sleep(1)
@@ -205,7 +220,7 @@ def print_gait_info(step, t, angles, mode):
         print(" | ".join(leg_angles))
         
 def execute_gait(mode):
-    t_cycle = 2               # czas pełnego cyklu chodu [s]
+    t_cycle = 1               # czas pełnego cyklu chodu [s]
     dt = 0.05                   # krok czasowy [s]
     step = 0
     
@@ -231,15 +246,52 @@ def execute_gait(mode):
     finally:
         print("Gait execution completed")
 
+def prepareCreepForward():
+    for servo_id, angle in FORWARD_POS.items():
+        move_servo(servo_id, angle)
+    time.sleep(0.5)
+
+def prepareCreepBackward():
+    for servo_id, angle in BACKWARD_POS.items():
+        move_servo(servo_id, angle)
+    time.sleep(0.5)
+
+def prepareCreepLeft():
+    for servo_id, angle in LEFT_POS.items():
+        move_servo(servo_id, angle)
+    time.sleep(0.2)
+
+def prepareCreepRight():
+    for servo_id, angle in RIGHT_POS.items():
+        move_servo(servo_id, angle)
+    time.sleep(0.2)
+
 if __name__ == "__main__":
-    # execute_gait(GaitMode.CREEP_FORWARD)
+    execute_gait(GaitMode.CREEP_FORWARD)
     # execute_gait(GaitMode.CREEP_BACKWARD)
-    # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_RIGHT)
+    # execute_gait(GaitMode.CREEP_LEFT)
     # execute_gait(GaitMode.CREEP_TROT_FORWARD)
     # execute_gait(GaitMode.CREEP_TROT_BACKWARD)
     # execute_gait(GaitMode.CREEP_TROT_RIGHT)  
     # execute_gait(GaitMode.CREEP_TROT_LEFT)  
 
-    for servo_id, angle in NEUTRAL_ANGLES.items():
-        move_servo(servo_id, angle)
+    # for servo_id, angle in BACKWARD_POS.items():
+    #     move_servo(servo_id, angle)
+    # time.sleep(1)
+    # execute_gait(GaitMode.CREEP_BACKWARD)
+
+    # prepareCreepBACKWARD()
+    # execute_gait(GaitMode.CREEP_BACKWARD)
+
+    # prepareCreepForward()
+    # execute_gait(GaitMode.CREEP_FORWARD)
+
+    # prepareCreepLeft()
+    # execute_gait(GaitMode.CREEP_LEFT)
+
+    # prepareCreepRight()
+    # execute_gait(GaitMode.CREEP_RIGHT)
+
+    # volt = servo.ReadVoltage(1)
+    # print(volt)
