@@ -218,7 +218,68 @@ def print_gait_info(step, t, angles, mode):
             leg_angles.append(f"{leg.upper()}: X={x_angle:6.1f}° Z={z_angle:6.1f}°")
         
         print(" | ".join(leg_angles))
-        
+
+def hello():
+    HELLO_POS = {
+    1: 45, 2: 30, 3: 135, 4: 150,
+    5: 105, 6: 70, 7: 75, 8: 110}
+
+    for servo_id, angle in HELLO_POS.items():
+        move_servo(servo_id, angle)
+    time.sleep(0.5)
+    move_servo(2, 90)
+
+    for _ in range(2):
+        move_servo(1, 10)
+        time.sleep(0.5)
+
+        move_servo(1, 60)
+        time.sleep(0.5)
+    time.sleep(0.5)
+    return_to_neutral()
+
+def pushupOneLeg():
+    PUSHUP_POS = {
+    1: 90, 2: 90, 3: 90, 4: 90,
+    5: 135, 6: 110, 7: 45, 8: 70}
+
+    for servo_id, angle in PUSHUP_POS.items():
+        move_servo(servo_id, angle)
+
+    for _ in range(3):
+        move_servo(2, 90)
+        time.sleep(0.7)
+
+        move_servo(2, 30)
+        time.sleep(0.7)
+    move_servo(2, 90)
+
+    for _ in range(3):
+        move_servo(4, 90)
+        time.sleep(0.7)
+
+        move_servo(4, 150)
+        time.sleep(0.7)
+    return_to_neutral()
+
+def pushup():
+    PUSHUP_POS = {
+    1: 90, 2: 90, 3: 90, 4: 90,
+    5: 135, 6: 110, 7: 45, 8: 70}
+
+    for servo_id, angle in PUSHUP_POS.items():
+        move_servo(servo_id, angle)
+
+    for _ in range(3):
+        move_servo(2, 90)
+        move_servo(4, 90)
+        time.sleep(0.7)
+
+        move_servo(2, 30)
+        move_servo(4, 150)
+        time.sleep(0.7)
+    return_to_neutral()
+
 def execute_gait(mode):
     t_cycle = 1               # czas pełnego cyklu chodu [s]
     dt = 0.05                   # krok czasowy [s]
@@ -267,7 +328,7 @@ def prepareCreepRight():
     time.sleep(0.2)
 
 if __name__ == "__main__":
-    execute_gait(GaitMode.CREEP_FORWARD)
+    # execute_gait(GaitMode.CREEP_FORWARD)
     # execute_gait(GaitMode.CREEP_BACKWARD)
     # execute_gait(GaitMode.CREEP_RIGHT)
     # execute_gait(GaitMode.CREEP_LEFT)
@@ -295,3 +356,5 @@ if __name__ == "__main__":
 
     # volt = servo.ReadVoltage(1)
     # print(volt)
+
+    hello()
