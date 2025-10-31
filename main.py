@@ -21,8 +21,8 @@ angle_limits = {
 }
 
 trims = {
-    1: -25, 2: 10, 3: 30, 4: 0,
-    5: -15, 6: 0, 7: -10, 8: 60}
+    1: -25, 2: 10, 3: 30, 4: -5,
+    5: -15, 6: -5, 7: -10, 8: 60}
 
 SERVO_MAPPING = [
     (1, 'lf', 'x'), (2, 'lf', 'z'),  # Serwo 1: LF X, Serwo 2: LF Z
@@ -73,6 +73,8 @@ class GaitMode(Enum):
     CREEP_TROT_BACKWARD = 6
     CREEP_TROT_RIGHT = 7
     CREEP_TROT_LEFT = 8
+    CREEP_TROT_MOVE_RIGHT = 9
+    CREEP_TROT_MOVE_LEFT = 10
 
 @dataclass
 class GaitParams:
@@ -137,6 +139,21 @@ GAIT_CONFIGS = {
         z_amps=(15, -15, -15, 15),
         x_offsets=(45-x_amp/2, 135-x_amp/2, 135-x_amp/2, 45-x_amp/2),
         z_offsets=(90, 90, 90, 90),
+        phase_offsets=(0.50, 0.00, 0.00, 0.50)  # LF i LR w fazie, RF i RR w fazie
+    ),
+
+    GaitMode.CREEP_TROT_MOVE_RIGHT: GaitParams(
+        x_amps=(-x_amp, -x_amp, x_amp, x_amp),
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(45+x_amp/2, 135+x_amp/2, 135-x_amp/2, 45-x_amp/2),
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
+        phase_offsets=(0.50, 0.00, 0.00, 0.50) 
+    ),
+    GaitMode.CREEP_TROT_MOVE_LEFT: GaitParams(
+        x_amps=(x_amp, x_amp, -x_amp, -x_amp),
+        z_amps=(z_amp, -z_amp, -z_amp, z_amp),
+        x_offsets=(45-x_amp/2, 135-x_amp/2, 135+x_amp/2, 45+x_amp/2),
+        z_offsets=(90-h, 90+h, 90+h, 90-h),
         phase_offsets=(0.50, 0.00, 0.00, 0.50)  # LF i LR w fazie, RF i RR w fazie
     )
 }
@@ -280,6 +297,150 @@ def pushup():
         time.sleep(0.7)
     return_to_neutral()
 
+def sideToSide():
+    for _ in range(3):
+        move_servo(2, 90-h-30)
+        move_servo(4, 90+h-30)
+        move_servo(6, 90+h+30)
+        move_servo(8, 90-h+30)
+        time.sleep(0.5)
+
+        move_servo(2, 90-h+30)
+        move_servo(4, 90+h+30)
+        move_servo(6, 90+h-30)
+        move_servo(8, 90-h-30)
+        time.sleep(0.5)
+
+    return_to_neutral()
+
+def steps():
+    for _ in range(2):
+        move_servo(2, 90-h-30)
+        move_servo(4, 90+h-30)
+        move_servo(6, 90+h-30)
+        move_servo(8, 90-h-30)
+        time.sleep(0.5)
+
+        move_servo(2, 90-h+30)
+        move_servo(4, 90+h+30)
+        move_servo(6, 90+h+30)
+        move_servo(8, 90-h+30)
+        time.sleep(0.5)
+    return_to_neutral()
+
+def sit():
+    move_servo(5, 90)
+    move_servo(7, 90)
+    move_servo(6, 90-10)
+    move_servo(8, 90+10)
+    time.sleep(0.7)
+
+    move_servo(2, 90-40)
+    move_servo(4, 90+40)
+    time.sleep(1.5)
+    return_to_neutral()
+
+def bounce():
+    # down
+    move_servo(2, 90-h+15)
+    move_servo(4, 90+h-15)
+    move_servo(6, 90+h-15)
+    move_servo(8, 90-h+15)
+    time.sleep(0.5)
+
+    # up without 2 leg
+    move_servo(2, 90-h+25)
+    move_servo(4, 90+h+15)
+    move_servo(6, 90+h+15)
+    move_servo(8, 90-h-15)
+    time.sleep(0.5)
+
+    #down
+    move_servo(2, 90-h+15)
+    move_servo(4, 90+h-15)
+    move_servo(6, 90+h-15)
+    move_servo(8, 90-h+15)
+    time.sleep(0.5)
+
+    # up without 4 leg
+    move_servo(2, 90-h-15)
+    move_servo(4, 90+h-25)
+    move_servo(6, 90+h+15)
+    move_servo(8, 90-h-15)
+    time.sleep(0.5)
+
+    #down
+    move_servo(2, 90-h+15)
+    move_servo(4, 90+h-15)
+    move_servo(6, 90+h-15)
+    move_servo(8, 90-h+15)
+    time.sleep(0.5)
+
+    # up without 6 leg
+    move_servo(2, 90-h-15)
+    move_servo(4, 90+h+15)
+    move_servo(6, 90+h-25)
+    move_servo(8, 90-h-15)
+    time.sleep(0.5)
+
+    #down
+    move_servo(2, 90-h+15)
+    move_servo(4, 90+h-15)
+    move_servo(6, 90+h-15)
+    move_servo(8, 90-h+15)
+    time.sleep(0.5)
+
+    # up without 8 leg
+    move_servo(2, 90-h-15)
+    move_servo(4, 90+h+15)
+    move_servo(6, 90+h+15)
+    move_servo(8, 90-h+25)
+    time.sleep(0.5)
+
+    return_to_neutral()
+
+def sayNo():
+    for _ in range(1):
+        move_servo(1, 75)
+        move_servo(3, 165)
+        move_servo(5, 165)
+        move_servo(7, 75)
+        time.sleep(0.6)
+
+        move_servo(1, 15)
+        move_servo(3, 105)
+        move_servo(5, 105)
+        move_servo(7, 15)
+        time.sleep(0.6)
+
+    return_to_neutral()
+
+def dive():
+    for _ in range(3):
+        move_servo(1, 75)
+        move_servo(3, 105)
+        move_servo(5, 165)
+        move_servo(7, 15)
+
+        move_servo(2, 90-h-20)
+        move_servo(4, 90+h+20)
+        move_servo(6, 90+h-20)
+        move_servo(8, 90-h+20)
+        time.sleep(0.5)
+
+        move_servo(1, 15)
+        move_servo(3, 165)
+        move_servo(5, 105)
+        move_servo(7, 75)
+
+        move_servo(2, 90-h+20)
+        move_servo(4, 90+h-20)
+        move_servo(6, 90+h+20)
+        move_servo(8, 90-h-20)
+        time.sleep(0.5)
+
+    return_to_neutral()
+
 def execute_gait(mode):
     t_cycle = 1               # czas pełnego cyklu chodu [s]
     dt = 0.05                   # krok czasowy [s]
@@ -357,4 +518,6 @@ if __name__ == "__main__":
     # volt = servo.ReadVoltage(1)
     # print(volt)
 
-    hello()
+    # hello()
+
+    return_to_neutral()
